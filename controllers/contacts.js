@@ -2,6 +2,7 @@ const mongodb = require('../data/database');
 const ObjectId = require('mongodb').ObjectId;
 
 const getAll = async (req, res) => {
+  //#swagger.tags=['Users']  
     const result = await mongodb.getDatabase().db().collection('contacts').find();
     result.toArray().then((contacts) => {
         res.setHeader('Content-Type', 'application/json');
@@ -10,6 +11,7 @@ const getAll = async (req, res) => {
 };
 
 const getSingle = async (req, res, next) => {
+  //#swagger.tags=['Users']  
     const contactsId = new ObjectId(req.params.id);
     const result = await mongodb.getDatabase().db().collection('contacts').find({_id: contactsId})
     result.toArray().then((contacts) => {
@@ -19,7 +21,7 @@ const getSingle = async (req, res, next) => {
 };
 
 const createContact = async (req, res) => {
-    const contactId = new Object(req.params.id);
+  //#swagger.tags=['Users']  
     const contact = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -27,8 +29,8 @@ const createContact = async (req, res) => {
         favoriteColor:req.body.favoriteColor,
         birthday:req.body.birthday
     };
-    const response = await mongodb.getDatabase().db().collection('contacts').insertOne({ _id: contactId }, contact);
-    if (response.modifiedCount > 0) {
+    const response = await mongodb.getDatabase().db().collection('contacts').insertOne(contact);
+    if (response.acknowledged) {
         res.status(204).send();
     }else{
         res.status(500).json(response.error || 'Some error occurred while updating the user.')
@@ -36,7 +38,8 @@ const createContact = async (req, res) => {
 };
 
 const updateContact = async (req, res) => {
-    const contactId = new Object(req.params.id);
+  //#swagger.tags=['Users']  
+    const contactId = new ObjectId(req.params.id);
     const contact = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -53,9 +56,10 @@ const updateContact = async (req, res) => {
 };
 
 const deleteContact = async (req, res) => {
-    const contactId = new Object(req.params.id);
-    const response = await mongodb.getDatabase().db().collection('contacts').remove({ _id: contactId }, true);
-    if (response.modifiedCount > 0) {
+  //#swagger.tags=['Users']  
+    const contactId = new ObjectId(req.params.id);
+    const response = await mongodb.getDatabase().db().collection('contacts').deleteOne({ _id: contactId });
+    if (response.deletedCount > 0) {
         res.status(204).send();
     }else{
         res.status(500).json(response.error || 'Some error occurred while updating the user.')
